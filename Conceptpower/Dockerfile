@@ -1,3 +1,4 @@
+# Wordnet doesn't install on Ubuntu 20, so we have to use 16
 FROM ubuntu:16.04
 
 # install Wordnet
@@ -11,16 +12,22 @@ RUN wget http://wordnetcode.princeton.edu/3.0/WordNet-3.0.tar.gz && tar -xf Word
 WORKDIR WordNet-3.0
 RUN ./configure --with-tcl=/usr/lib/tcl8.5 --with-tk=/usr/lib/tk8.5 && make && make install
 
-# install Tomcat
-RUN apt-get -y install default-jdk
+# install Java 17
+RUN apt-get -y install software-properties-common
+RUN apt update
+RUN add-apt-repository ppa:linuxuprising/java
+RUN apt update
+RUN echo oracle-java17-installer shared/accepted-oracle-license-v1-3 select true | /usr/bin/debconf-set-selections
+RUN apt install -y oracle-java17-installer --install-recommends
 
+# install Tomcat
 RUN groupadd tomcat
 RUN useradd -s /bin/false -g tomcat -d /opt/tomcat tomcat
 
 WORKDIR ../tomcat
-RUN wget https://dlcdn.apache.org/tomcat/tomcat-8/v8.5.70/bin/apache-tomcat-8.5.70.tar.gz
+RUN wget https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.75/bin/apache-tomcat-9.0.75.tar.gz
 RUN mkdir /opt/tomcat
-RUN tar xzvf apache-tomcat-8*tar.gz -C /opt/tomcat --strip-components=1
+RUN tar xzvf apache-tomcat-9.*.gz -C /opt/tomcat --strip-components=1
 
 WORKDIR /opt/tomcat
 RUN chgrp -R tomcat /opt/tomcat
