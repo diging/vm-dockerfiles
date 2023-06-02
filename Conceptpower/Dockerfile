@@ -25,9 +25,9 @@ RUN groupadd tomcat
 RUN useradd -s /bin/false -g tomcat -d /opt/tomcat tomcat
 
 WORKDIR ../tomcat
-RUN wget https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.75/bin/apache-tomcat-9.0.75.tar.gz
+RUN wget https://dlcdn.apache.org/tomcat/tomcat-10/v10.1.9/bin/apache-tomcat-10.1.9.tar.gz
 RUN mkdir /opt/tomcat
-RUN tar xzvf apache-tomcat-9.*.gz -C /opt/tomcat --strip-components=1
+RUN tar xzvf apache-tomcat-10.*.gz -C /opt/tomcat --strip-components=1
 
 WORKDIR /opt/tomcat
 RUN chgrp -R tomcat /opt/tomcat
