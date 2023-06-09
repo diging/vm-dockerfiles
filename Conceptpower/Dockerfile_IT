@@ -1,0 +1,52 @@
+# Wordnet doesn't install on Ubuntu 20, so we have to use 16
+FROM ubuntu:16.04
+
+# install Wordnet
+RUN apt update
+RUN apt-get -y install tcl8.5
+RUN apt-get -y install tcl8.5-dev
+RUN apt-get -y install tk8.5-dev
+RUN apt-get -y install wget
+
+RUN wget http://wordnetcode.princeton.edu/3.0/WordNet-3.0.tar.gz && tar -xf WordNet-3.0.tar.gz
+WORKDIR WordNet-3.0
+RUN ./configure --with-tcl=/usr/lib/tcl8.5 --with-tk=/usr/lib/tk8.5 && make && make install
+
+# install Java 17
+RUN apt-get -y install software-properties-common
+RUN apt update
+RUN add-apt-repository ppa:linuxuprising/java
+RUN apt update
+RUN echo oracle-java17-installer shared/accepted-oracle-license-v1-3 select true | /usr/bin/debconf-set-selections
+RUN apt install -y oracle-java17-installer --install-recommends
+
+# install git
+RUN apt install git -y
+
+# install subversion for pom
+RUN apt-get install libsvn-dev libapache2-mod-svn subversion-tools -y
+RUN apt-get install subversion -y
+
+# install maven
+WORKDIR /opt
+RUN wget https://dlcdn.apache.org/maven/maven-3/3.9.2/binaries/apache-maven-3.9.2-bin.tar.gz && tar -xvf apache-maven-3.9.2-bin.tar.gz
+
+# create data folder
+RUN mkdir /data && mkdir /data/dbfiles && mkdir /data/lucene
+
+# checkout code (develop branch)
+RUN mkdir /code
+WORKDIR /code
+RUN git clone https://github.com/diging/conceptpower
+WORKDIR /code/conceptpower
+RUN git checkout develop
+
+# instal db4o
+WORKDIR /code/conceptpower/Conceptpower+Spring
+RUN /opt/apache-maven-3.9.2/bin/mvn install:install-file -Dfile=/code/conceptpower/Conceptpower+Spring/lib/db4o-8.0/lib/db4o-8.0.276.16149-all-java5.jar -DgroupId=com.db4o -DartifactId=db4o-full-java5 -Dversion=8.0 -Dpackaging=jar
+
+# run integration tests
+RUN /opt/apache-maven-3.9.2/bin/mvn -Dproject.build.sourceEncoding=UTF-8 -Pintegration-test clean verify -Dwordnet.path=/usr/local/WordNet-3.0 -Ddb.files.path=/data/dbfiles -Dlucene.index=/data/lucene -Ddebug_level=debug
+
+
+# build with: docker build -f Dockerfile_IT -t cp-it .
