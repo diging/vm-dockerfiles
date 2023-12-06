@@ -6,7 +6,7 @@ services:
     command: --default-authentication-plugin=mysql_native_password --lower_case_table_names=1
     restart: always
     volumes:
-      - db-data:/var/lib/mysql
+      - cp-db-data:/var/lib/mysql
     networks:
       - conceptpower-network
     env_file:
@@ -27,5 +27,5 @@ networks:
   conceptpower-network:
 
 volumes:
-  db-data:
+  cp-db-data:
     external: true
