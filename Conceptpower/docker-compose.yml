@@ -11,7 +11,7 @@ services:
       - conceptpower-network
     env_file:
       - ./config/db.env
-  conceptpower:
+  conceptpower-docker:
     build:
         dockerfile: Dockerfile
     ports:
@@ -20,6 +20,8 @@ services:
       - conceptpower-network
     depends_on:
       - "db"
+    volumes:
+      - path/to/cp/data:/app
 
 networks:
   conceptpower-network:
