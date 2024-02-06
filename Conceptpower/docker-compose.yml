@@ -6,7 +6,6 @@ services:
     command: --default-authentication-plugin=mysql_native_password --lower_case_table_names=1
     restart: always
     volumes:
-      - cp-tomcat-data:/opt/tomcat/webapps
       - cp-db-data:/var/lib/mysql
     networks:
       - conceptpower-network
@@ -23,7 +22,8 @@ services:
     depends_on:
       - "db"
     volumes:
-      - path/to/cp/data:/app
+      - /home/tomcat/conceptpower/data:/app
+      - /home/tomcat/conceptpower/webapps:/opt/tomcat/webapps
 
 networks:
   conceptpower-network:
