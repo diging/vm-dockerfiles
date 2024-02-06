@@ -7,6 +7,7 @@ services:
     restart: always
     volumes:
       - db-data:/var/lib/mysql
+      - tomcat-data:/opt/tomcat/webapps
     networks:
       - conceptpower-network
     env_file:
@@ -26,4 +27,6 @@ networks:
 
 volumes:
   db-data:
+    external: true
+  tomcat-data:
     external: true
