@@ -6,14 +6,15 @@ services:
     command: --default-authentication-plugin=mysql_native_password --lower_case_table_names=1
     restart: always
     volumes:
-      - db-data:/var/lib/mysql
-      - tomcat-data:/opt/tomcat/webapps
+      - cp-tomcat-data:/opt/tomcat/webapps
+      - cp-db-data:/var/lib/mysql
     networks:
       - conceptpower-network
     env_file:
       - ./config/db.env
-  conceptpower:
+  conceptpower-docker:
     build:
+        context: .
         dockerfile: Dockerfile
     ports:
       - "8081:8080"
@@ -21,12 +22,14 @@ services:
       - conceptpower-network
     depends_on:
       - "db"
+    volumes:
+      - path/to/cp/data:/app
 
 networks:
   conceptpower-network:
 
 volumes:
-  db-data:
+  cp-db-data:
     external: true
-  tomcat-data:
+  cp-tomcat-data:
     external: true
