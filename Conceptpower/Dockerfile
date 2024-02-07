@@ -39,11 +39,19 @@ RUN chown -R tomcat webapps/ work/ temp/ logs/
 # allow Jenkins to deploy to tomcat
 COPY files/context.xml /opt/tomcat/webapps/manager/META-INF/
 
-# set up Tomcat users
+# make env variables for build available
 COPY config/cp.env .
+RUN source cp.env
+
+# set up Tomcat users
 COPY files/tomcat-users.xml /opt/tomcat/conf/
-RUN source cp.env && sed -i -e 's/\[username\]/'$TOMCAT_USER'/' /opt/tomcat/conf/tomcat-users.xml
-RUN source cp.env && sed -i -e 's/\[password\]/'$TOMCAT_PASSWORD'/' /opt/tomcat/conf/tomcat-users.xml
+RUN sed -i -e 's/\[username\]/'$TOMCAT_USER'/' /opt/tomcat/conf/tomcat-users.xml
+RUN sed -i -e 's/\[password\]/'$TOMCAT_PASSWORD'/' /opt/tomcat/conf/tomcat-users.xml
+
+# set up proxy
+COPY files/server.xml /opt/tomcat/conf/
+RUN sed -i -e 's/\[proxyPort\]/'$PROXY_PORT'/' /opt/tomcat/conf/server.xml
+RUN sed -i -e 's/\[proxyName\]/'$PROXY_NAME'/' /opt/tomcat/conf/server.xml
 
 EXPOSE 8080
 
