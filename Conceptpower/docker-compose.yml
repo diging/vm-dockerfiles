@@ -31,5 +31,3 @@ networks:
 volumes:
   cp-db-data:
     external: true
-  cp-tomcat-data:
-    external: true
