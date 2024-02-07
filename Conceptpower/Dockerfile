@@ -1,8 +1,7 @@
 # Wordnet doesn't install on Ubuntu 20, so we have to use 16
 FROM ubuntu:16.04
 
-ARG TOMCAT_USER
-ARG TOMCAT_PASSWORD
+SHELL ["/bin/bash", "-c"]
 
 # install Wordnet
 RUN apt update
