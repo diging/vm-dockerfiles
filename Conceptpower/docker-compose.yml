@@ -21,6 +21,8 @@ services:
       - conceptpower-network
     depends_on:
       - "db"
+    env_file:
+      - ./config/cp.env
     volumes:
       - /home/tomcat/conceptpower/data:/app
       - /home/tomcat/conceptpower/webapps:/opt/tomcat/webapps

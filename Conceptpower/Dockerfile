@@ -34,7 +34,13 @@ RUN chgrp -R tomcat /opt/tomcat
 RUN chmod -R g+r conf && chmod g+x conf
 RUN chown -R tomcat webapps/ work/ temp/ logs/
 
+# allow Jenkins to deploy to tomcat
 COPY files/context.xml /opt/tomcat/webapps/manager/META-INF/
+
+# set up Tomcat users
+COPY files/tomcat-users.xml /opt/tomcat/conf/
+RUN sed -i '' -e 's/\[username\]/'$TOMCAT_USER'/' /opt/tomcat/conf/tomcat-users.xml
+RUN sed -i '' -e 's/\[password\]/'$TOMCAT_PASSWORD'/' /opt/tomcat/conf/tomcat-users.xml
 
 EXPOSE 8080
 
