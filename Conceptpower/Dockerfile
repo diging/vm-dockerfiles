@@ -1,6 +1,9 @@
 # Wordnet doesn't install on Ubuntu 20, so we have to use 16
 FROM ubuntu:16.04
 
+ARG TOMCAT_USER
+ARG TOMCAT_PASSWORD
+
 # install Wordnet
 RUN apt update
 RUN apt-get -y install tcl8.5
@@ -38,9 +41,10 @@ RUN chown -R tomcat webapps/ work/ temp/ logs/
 COPY files/context.xml /opt/tomcat/webapps/manager/META-INF/
 
 # set up Tomcat users
+COPY config/cp.env .
 COPY files/tomcat-users.xml /opt/tomcat/conf/
-RUN sed -i -e 's/\[username\]/'$TOMCAT_USER'/' /opt/tomcat/conf/tomcat-users.xml
-RUN sed -i -e 's/\[password\]/'$TOMCAT_PASSWORD'/' /opt/tomcat/conf/tomcat-users.xml
+RUN source cp.env && sed -i -e 's/\[username\]/'$TOMCAT_USER'/' /opt/tomcat/conf/tomcat-users.xml
+RUN source cp.env && sed -i -e 's/\[password\]/'$TOMCAT_PASSWORD'/' /opt/tomcat/conf/tomcat-users.xml
 
 EXPOSE 8080
 
